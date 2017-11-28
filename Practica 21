@@ -1,0 +1,80 @@
+###-----------------------------------CORREGIR NORMALIDAD
+#Análisis de entregas de productos
+#se utiliza tiempo de var dep para decirle a los clientes cuanto tardará en llegar el producto
+#sabemos que las var q impactan en el tiempo de entrega son la dist y el # de cajas
+ncajas<-c(10,15,10,20,25,18,12,14,16,22,24,17,13,30,24)
+dist<-c(30,25,40,18,22,31,26,34,29,37,20,25,27,23,33)
+time<-c(24,27,29,31,25,33,26,28,31,39,33,30,25,42,40) #v.d
+super<-data.frame(ncajas,dist,time)
+pairs(super)
+cor(super)
+nulo<-lm(time~1,data=super)
+completo<-lm(time~.,data = super)
+step(nulo,scope = list(lower=nulo,upper=completo),direction = "forward")
+mod<-lm(time~ncajas+dist,data = super)
+summary(mod)
+#aplicando las pruebas
+shapiro.test(rstudent(mod)) 
+#se obtiene un p-value <.05 por lo tanto NO cumple con el supuesto de NORMALIDAD
+require(lmtest)
+bptest(mod) 
+#se obtiene un p-value >.05 por lo tanto SI cumple con el supuesto de HOMOCEDASTICIDAD
+dwtest(mod,alternative = "two.sided") 
+#se obtiene un p-value >.05 por lo tanto SI cumple con el supuesto de INDEPENDENCIA
+summary(mod)
+
+#corregir independencia
+#se corrrigen las observaciones con datos atipicos, que tenga ruido por lo tanto se corrije normal.
+#outlier
+install.packages("car")
+require(car)
+outlierTest(completo,cutoff=0.05,n.max=5,order=T)
+#saca la obs que bota
+#saldra la obs atipica (la obs 5 es un caso atipico)
+influencePlot(completo,id.n=5)
+#distancia del valor medio a la variable, la que tenga >dist es la que tiene problemas en el mod
+cmood<-cooks.distance(completo)
+cmood
+#----------------------
+install.packages("faraway")
+require(faraway)
+halfnorm(cmood,ylab="dist cook")
+#se espera un dato >1 para comprobar si es atipico 
+#el valor 5 es 0.8032, tiene mas distancia a todos los valores por lo tanto me genera un problema
+#debo quitarla
+#----modelo excluyendo los outlier
+
+super<-super[!rownames(super)=="5",] #quito el valor 5
+super
+pairs(super)
+cor(super)
+nulo<-lm(time~1,data = super)
+completo<-lm(time~.,data = super)
+step(nulo,scope=list(lower=nulo,upper=completo),direction = "forward")
+#el modelo nulo tiene un AIC de 49.38
+#el modelo completo tiene un AIC de 4.98
+#el mejor modelo es el completo pq tiene el AIC mas pequeño aplicamos el mod de reg
+mod1<-lm(time~ncajas+dist,data = super)
+summary(mod1)
+#el valor ajustado es de (Adjusted R-squared) 0.9627 con un valor
+#residual de 1.088 (Residual standard error) y un p-value de 5.533e-09 (p-value<0.05)
+
+#----aplicamos nuevamente los supuestos para saber si el modelo cumple o no con los requisitos
+
+shapiro.test(rstudent(mod1))# SI cumple con el supuesto de NORMALIDAD
+#se obtiene una normalidad en los datos de 0.91628 con un p-value de 0.1944 (p-value>0.05)
+
+require(lmtest)
+bptest(mod1) #SI cumple con el supuesto de HOMOCEDASTICIDAD
+#la prueba de homocedasticidad de Breaush Pagan es de 1.038 y un p-value de 0.5951 (p-value>0.05)
+
+dwtest(mod1,alternative = "two.sided") #SI cumple con el supuesto de INDEPENDENCIA
+#la prueba Durbin Watson fue de 2.651 con un p-value de 0.1644 (p-value>0.05)
+
+#La ecuación del modelos es
+coefficients(mod1)
+#y=2.1952+1.0031x1+0.3805x2
+
+##----INTERPRETACIÓN DE LOS DATOS
+#si se mantiene cte la dist y aumentamos en una unidad las cajas entonces aumenta 1.0031 el tiempo
+#si se mantiene cte el no de cajas y aumentamos en una unidad la dist entonces aumenta 0.3805 en tiempo
