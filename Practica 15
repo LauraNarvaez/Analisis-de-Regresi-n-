@@ -1,0 +1,53 @@
+#------------------------------------Ejercicio clase
+##en una financiera se requiere evaluar a los corredores de bolsa de diferentes empresas, la oferta y
+# desempeño de cada corredor se evalua en 6 áreas, empleando para c/u de las áreas una escala de
+# 0 a 5. Tres de las áreas evaluadas son ejecución en la operación, facilidad de uso y gamma de ofertas.
+# Un  5 es la mejor calificación en diferentes áreas. En los siguientes datos se presentan las 
+# puntuaciones obtenidas 
+corredor<-c("wall st", "etrade1", "etrade2","pre trade","track","water house", "brown","br america", "merill lynch", "strong funds")
+operacion<-c(3.7,3.4,2.5,4.8,4,3,2.7,1.7,2.2,1.4)
+uso<-c(4.5,3,4,3.7,3.5,3,2.5,3.5,2.7,3.6)
+gamma<-c(4.8,4.2,4,3.4,3.2,4.6,3.3,3.1,3,2.5)
+califtotal<-c(4,3.5,3.5,3.5,3.5,3.5,3,3,2.5,2) #v.i
+#a) det. la ec.de reg estimada q se puede usar para predecir la calif tot según las eval obtenidas
+#la ecuacion es y = 0.34510+ 0.25482x1 +0.13249x2+ 0.45852x3
+broker<-data.frame(operacion,uso,gamma,califtotal)
+View(broker)
+cor(broker,use="everything",method = "pearson")
+# mayor correlacion gamma y calif tot
+mrm<-lm(califtotal~operacion+uso+gamma)
+summary(mrm)
+
+#b) emplee la prueba F p. det. la significacia global de la relación, el nivel de sig. q se requiere es
+#   (p-value <0.05)de 95%. ¿cuál es su conclusión?
+anova(mrm)
+#se observa que la varibale dependiente con respecto a la operacion tiene un estadistico F de 29.1789; 
+#es un buen modelo. Para la relacion entre calificacion toal y gamma se tiene un estadistico F de 13.8545
+#sin embargo el uso no cumple los requerimientos
+
+#c) elimine cualquiera de las v.i que no sean significativas para la ec de reg estim. ¿Cuál es la ec.de 
+#   regresión estimada que recomienda? compare r^2 de los modelos.
+newbroker<-data.frame(califtotal,operacion,gamma)
+mrm1<-lm(califtotal~operacion+gamma)
+summary(mrm1)
+anova(mrm1)
+# la r^2 del modelo modificado es .8311 solo tiene 2 variables
+# la r^2 del modelo original es .8284 con 3 variables
+
+##APLICANDO LOS SUPUESTOS 
+newbroker$fitted.mrm1<-fitted(mrm1)
+newbroker$residuals.mrm1<-residuals(mrm1)
+newbroker$rstudent.mrm1<-rstudent(mrm1)
+#NORMALIDAD
+shapiro.test(newbroker$rstudent.mrm1)
+qqnorm(newbroker$rstudent.mrm1)
+qqline(newbroker$rstudent.mrm1)
+## se tiene un p-value de 0.6121 lo que indica que cumple con el supuesto de normalidad
+#HOMOCEDASTICIDAD
+require(lmtest)
+bptest(mrm1)
+## se tiene un p-value de 0.1104 lo que indica que se cumple este supuesto
+#AUTOCORRELACION
+dwtest(mrm1,alternative="two.sided")
+## se tiene un DW de 2.48 y un p-value de 0.6228, valores que se encuentran dentro del rango. Se cumple
+## los residuos son independientes N
