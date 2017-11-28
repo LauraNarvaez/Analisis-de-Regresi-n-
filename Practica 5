@@ -1,0 +1,46 @@
+#########FORMA CORTA PARA TRABAJAR CON BASES DE DATOS
+temporal<-tempfile()  ###descargar archivos de internet ruta corta
+download.file("ruta", temporal)
+files<-unzip(temporal,list=TRUE)$Name
+unzip(temporal,files=files[grepl("dbf",files)])
+library(foreign)
+require(foreign)
+mti2015<-read.dbf("C:/Users/Ana Laura/Desktop/mti2015_05_17_sdem_precodificado.DBF")
+View(mti2015)
+table(mti2015$SEX)
+install.packages("questionr")
+require(questionr)
+wtd.table(mti2015$SEX, weights= mti2015$FAC_MTI)   #para hacer datos expandidos(el total)
+ls(mti2015) #para ver las variables de la BD
+sum(mti2015$FAC_MTI)  #sumar toda la columna  
+table(mti2015$R_DEF_ENOE)
+table(mti2015$CS_P12)
+wtd.table(mti2015$CS_P12, weights= mti2015$FAC_MTI)
+wtd.table(mti2015$EDA,mti2015$CS_P12, weights= mti2015$FAC_MTI ) #tabla cruzada(renglones,columnas)solo dos variables
+edomex<-subset(mti2015,mti2015$ENT==15)  #filtrar casos a partir de una variable
+View(edomex)
+edomexmuj<-subset(mti2015,mti2015$ENT==15 & mti2015$SEX==2)
+aguaszac<-subset(mti2015,mti2015$ENT=="01"|mti2015$ENT=="32")  #filtrar con dos casos de una variable
+table(aguaszac$ENT)
+#------------------------------------------------------------------------
+require (foreign)
+mti2015 <- read.dbf ("C://Users//S//Documents//Actuaría//mti2015_05_17_sdem_precodificado.DBF") 
+table (mti2015$SEX)
+install.packages("questionr")
+require (questionr)
+wtd.table(mti2015$SEX, weights = mti2015$FAC_MTI)
+ls (mti2015)
+sum (mti2015$FAC_MTI)
+table(mti2015$R_DEF_ENOE)
+table(mti2015$CS_P12)
+wtd.table(mti2015$CS_P12, weights = mti2015$FAC_MTI)
+wtd.table(mti2015$EDA, mti2015$CS_P12, 
+          weights = mti2015$FAC_MTI)#Sólo permite cruzar dos variables
+edomexmuj <- subset (mti2015, mti2015$ENT == 15 & mti2015$SEX == 2)
+agc <- subset (mti2015, mti2015$ENT == "01")
+zac <- subset (mti2015, mti2015$ENT == 32)
+agczac <- subset (mti2015, mti2015$ENT == "01" | mti2015$ENT ==32 )
+
+table (agczac$ENT)
+as.numeric(mti2015$ENT)
+class(mti2015$ENT)
