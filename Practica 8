@@ -1,0 +1,6 @@
+#Relación entre el número de alumnos de las facultades y las ventas en miles en las cafeterías de las facultades
+indep<-c(2,6,8,8,12,16,20,20,22,26)   #número de alumnos en cientos
+dep<-c(58,105,88,118,117,137,157,169,149,202)  #ventas en miles
+datos<-data.frame(indep,dep)
+plot(datos[,1], datos[,2], main="Diagrama de Dispersión",xlab = "Cantidad de alumnos (en cientos)", ylab = "Ventas (en miles)")
+abline(lm(datos[,2]~datos[,1]), col="blue")
