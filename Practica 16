@@ -1,0 +1,80 @@
+#COMPARACIÓN DE MODELOS
+#seleccionar el mjr conjunto de predictores indep. (calidad y capacidad). Se proponen 3 mod. con la finalidad 
+#de aplicar el principio de parsimonia (conocer v.i. innecesarias) con el fin de evitar multiconealidad, es 
+#decir, SE TIENEN MUCHAS VARIABLES INTENTANDO EXPLICAR EL MOD. ante estas variables se pueden comparar 3 mod.
+#1) precio~capacidad
+#2) precio~calidad
+#3) precio~calidad+capacidad
+#¿comó se selecciona el mjr mod? 
+
+#CRITERIO DE LA INFORMACIÓN Akaike (AIC)
+#R: el que mjr ajusta con menos variables posibles, una medida de ajuste que penaliza el modelo por tener mas variables
+#AIC=(n)(Log(SCR/n))+2k
+#SCR: es la suma de cuadrados residuales
+#n: número de casos del modelo
+#k: numero de v.i
+
+#criterio: 
+#aquella opcion que tenga el menor valor posible, el mas pequeño; nos ayudara a decidir sobre la comparacion
+#de los modelos.Para mayor practicidad se utiliza la funcion "step()"
+#Dentro del mod step by syep se tienen 3 modalidades
+#1. forward.... parte del coeficiente B0 y de ahí va probando las variables independientes p. ver cual es la
+#   q mas aporta al mod.
+#2. backward... R empieza con todas las v.i y estudia si el AIC baja cuando hay cambios de variables
+#3. both.... empieza como el forward las diferencia es que se realizan test p. conocer el predictor menos util
+#El metodo mas recomendable es el backward pq tienen un efecto represor q permite probar cuando una variable 
+#tiene influencia solo si otra variable se mantiene constante, vamos a calcular el modelo con las 2 v.i.
+
+capa<-c(4330,5500,5550,4700,5200,5500,4700,5500,5800,5000)
+calidad<-c(2,3,4,3,4,4,4,5,5,5)
+precio<-c(190,219,249,249,250,340,289,395,439,525)
+moch<-data.frame(precio,capa,calidad)
+mod1<-lm(precio~capa+calidad,data=moch)
+summary(mod1)
+#Adjusted R-squared: el mod explica el 70% de variabilidad 
+#tenemos un error estandar  residual de 58.75 este modelo dice q es este es el mjr modelo que el basico
+
+#para obtener el mjr ajuste
+#metodo backward
+step(mod1,direction = "backward")
+#el modelo step analizo 2 mod 
+#1) precio~capa+calidad con un AIC=83.76
+#2) precio~calidad con un AIC=83.51
+
+#metodo both
+step(mod1,direction = "both")
+#1) precio~capa+calidad AIC=83.76
+#2) precio~calidad AIC=83.51
+
+#en ambos se obtiene el mismo resultado
+
+#metodo forward
+step(mod1,direction = "forward")
+#en este caso solo se tiene el modelo completo pq inicia haciendo pruebas con el mod nulo y solo deja el 
+#mod completo pq es el q mayor AIC muestra
+
+#en este caso nos quedamos con el mjr AIC q es el mod de precio~calidad a este mod le sacamos la tabla
+#de anova
+
+help("datasets")
+library(help="datasets")
+require(datasets);data(swiss);?swiss
+#v.d Fertility
+#v.i Agriculture,Education, Infant.Mortality
+#Realizar una descripcion de la funcion summary dek mod completo
+f<-swiss$Fertility
+a<-swiss$Agriculture
+e<-swiss$Education
+i<-swiss$Infant.Mortality
+suiza<-data.frame(f,a,e,i)
+mod2<-lm(f~a+e+i)
+summary(mod2)
+# las variables que son significativas para el mod son la educacion y la mortalidad infantil estas variables 
+#explican el mod en un 54%, la fertilidad estara vinculada siempre con el nivel de educación y el num
+#de niños que mueren para aplicar el criterio AIC para saber cual es el mjr ajuste
+
+step(mod2,direction = "backward")
+step(mod2,direction = "both")
+step(mod2,direction = "forward")
+#Las variables que integraran el nuevo mod son educacion y la mortalidad infantil con AIC=203.25 es decir
+#que si la educacion se reduce un 82% entonces la mortalidad aumenta un 2%
