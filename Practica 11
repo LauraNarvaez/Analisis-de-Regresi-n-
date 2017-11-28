@@ -1,0 +1,43 @@
+#estatura (x) longitud del salto (y)
+vax<-c(170,172,173,174,174,175,176,177,180,180,180,180,180,181,181,182,182,182,182,184,184,185,186,188)
+vay<-c(.84,1.31,1.42,1.03,1.07,1.08,1.04,1.8,1.45,1.60,1.61,2.13,2.15,.84,1.43,.9,1.81,1.94,2.68,1.49,2.52,3,1.87,3.08)
+
+#1)determine la ec de la recta de regresion estimada... y=-15.24+0.09423x
+#2)calcule una estimacion puntual del salto horizontal promedio cuando la estatura de la persona es de 182...... 1.9060
+#3)calcule los valores de los residuos de minimos cuadrados de las 4 obsevaciones con las cuales la estatura es de 182..... -1.00600694 -0.09600694  0.03399306  0.77399306
+#¿que proporcion de la variacion observada en el salto horizontal es atribuida a la relacion de regresion lineal simple.....   0.4513, baja, no se aceptaria, se aceptan arriba de 60%
+mediax<-mean(vax)
+mediay<-mean(vay)
+sumax<-sum(vax)
+sumay<-sum(vay)
+mult<-vax*vay
+sumamult<-sum(mult)
+vax2<-vax*vax
+sumavax2<-sum(vax2)
+sumax2<-sumax*sumax
+SXY<-sumamult-((sumax*sumay)/length(vax))
+SXX<-sumavax2-sumax2/length(vax)
+beta1<-SXY/SXX
+beta0<-mediay-beta1*mediax
+(valy<-beta0+(beta1*vax))
+valy
+residuos<-vay-valy
+residuos
+residuos2<-residuos^2
+SSE<-sum(residuos2)
+sigma2=SSE/(length(vax)-2)
+v182<-beta0+beta1*182
+residuos[vax==182]
+SST<-sum(vay*vay)-(sumay*sumay/length(vay))
+r2<-1-(SSE/SST)
+mdo1<-lm(vay~vax)
+summary(mdo1)
+names(mdo1)
+mdo1$coefficients
+mdo1$coefficients[1]
+mdo1$coefficients[-1]
+datos<-data.frame(vax,vay)
+plot(datos[,1], datos[,2], main="Diagrama de Dispersión",xlab = "Estatura", ylab = "Longitud del salto")
+abline(lm(datos[,2]~datos[,1]), col="blue")
+# plot(vay~vax,xlab = "Estatura", ylab = "Longitud del salto",xlin=c(160,190),ylin=c(.80,3.2),main="Diagrama de Dispersión")
+# abline(mdo1,col="green")
