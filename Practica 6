@@ -1,0 +1,30 @@
+###########FORMA LARGA paratrabajar con bases de datos que obtienes de fuentes como INEGI#############
+install.packages("foreign")
+require(foreign)
+mti2015<-read.dbf("C:/Users/SALA-D4/Desktop/mti2015_05_17_sdem_precodificado.DBF")
+table(mti2015$SEX) #cuantos hombres y mujeres hay en la base de datos
+install.packages("questionr")
+require(questionr)
+#necesito expandir mostrar toda la población
+wtd.table(mti2015$SEX,weights=mti2015$FAC_MTI)
+ls(mti2015) #genera el nombre de todas las variables q tengo en la base
+sum(mti2015$FAC_MTI)
+table(mti2015$R_DEF_ENOE)
+table(mti2015$CS_P12)
+wtd.table(mti2015$CS_P12,weights=mti2015$FAC_MTI)
+#de los 4 millones supongo q deberian saber leer, como requiero saber la edad de estos niños que no saben leer 
+#uso function subset o cruze de variables
+wtd.table(mti2015$EDA,mti2015$CS_P12, weights=mti2015$FAC_MTI) #renglones (edad), columnas(¿sabe leer?)
+#A MAYOR EDAD deben saber leer mejor
+#variable dependiente sabe leer o no
+#variable independiente la edad y otras hipotesis por la cuales no saben leer
+
+#filtrar bases, solo queriero información especifica
+edomex<-subset(mti2015,mti2015$ENT==15)
+edomexm<-subset(mti2015,mti2015$ENT==15&mti2015$SEX==2)
+aguas<-subset(mti2015,mti2015$ENT=="01" )
+zacatecas<-subset(mti2015,mti2015$ENT==32)
+agza<-subset(mti2015,mti2015$ENT=="01" | mti2015$ENT==32)
+table(agza$ENT)
+as.numeric(mti2015$ENT) #convertir a numerico
+class(mti2015$ENT)
