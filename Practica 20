@@ -1,0 +1,127 @@
+#PREDECIR ESTIMACIONES PUNTUALES
+tasa.respiracion<-c(71,53,55,48,69,84,21,68,68) #vd
+potasio<-c(388,258,292,205,449,331,114,580,622) #vi
+zinc<-c(2414,10693,22682,12560,2464,2607,16205,2005,1825) #vi
+estudio<-data.frame(tasa.respiracion,potasio,zinc)
+pairs(estudio)
+cor(estudio)
+regnull<-lm(tasa.respiracion~1,data=estudio)
+allreg<-lm(tasa.respiracion~.,data = estudio)
+step(regnull,scope = list(lower=regnull,upper=allreg),direction = "forward") #sirve para saber AIC
+#el mejor modelo es tasa de respiracion y zinc
+mod1<-lm(tasa.respiracion~zinc,data = estudio)
+summary(mod1)
+#el modelo es aceptable pues la variable es significativa b1 dif de 0 la r^2 explica la variabilidad
+#del modelo es decir su relacion 
+#REALIZANDO LAS PRUEBAS
+shapiro.test(rstudent(mod1))
+install.packages("lmtest")
+require(lmtest)
+bptest(mod1)
+dwtest(mod1,alternative = "two.sided")
+summary(mod1)
+coefficients(mod1)
+#ecuacion del modelo: y=73.47-.001691x1+error
+#y=B0+B1x1+E
+#interpretar el modelo
+#en este modelo podriamos decir que por cada unidad de zinc que aumenta la tasa de respiración
+#disminuye 0.00285
+
+#Dado que el modelo cumple los supuestos, para generar pronosticos genero el min y max de cada obs
+#que me permiten establecer la predicción de los datos
+#limites para predecir
+limestudio<-seq(min(estudio$zinc),max(estudio$zinc),length=9) #generamos un rango
+limestudio<-data.frame(limestudio) #almacenamos el rango obtenido en un data.frame
+limestudio #mostramos los datos
+limestud<-predict.lm(allreg,limestudio,interval = "prediction",se.fit = TRUE,data=estudio) #del mr con el lim
+# realiza la prediccion y llamas el modelo con head
+head(limestud$fit) # se generan los limites, solo te da los primeros val del dta
+#fit valor ajustado de los elementos 1= tasa de respiracion (30.15 y 103.91) se obtienen mis valor ajustados de y
+#y: tasa de respiración (val observado)
+###para dibujar los limites
+matplot(limestudio,limestud$fit,type="l")
+
+####------------Predicciones puntuales
+#tener un val en la TR cuando Zinc tiene un valor en especifico
+predict(allreg,data.frame(zinc=10000,potasio=40),interval = "predict")
+#cuando tienes 10000 de zinc y 40 de potasio la tasa de respiración es de 45.42 se mueve entre -.55 y 91.39
+#con grado de confianza del 95% 
+
+#--------------------------------------------------------
+#ejemplo 2
+#ritmo cardiaco de personas con diabetes
+peso<-c(74,92,63,58,78,85,85,73,62,80,72,74)
+altura<-c(168,196,170,175,162,169,190,186,176,170,176,179)
+ritmo<-c(62,75,60,71,66,62,79,74,70,66,71,69) #vd
+edad<-c(25,31,29,64,44,41,37,35,34,29,19,50)
+estudiorc<-data.frame(ritmo,peso,altura,edad)
+pairs(estudiorc)
+cor(estudiorc)
+nulo<-lm(ritmo~1,data = estudiorc)
+complete<-lm(ritmo~.,data = estudiorc)
+step(nulo,scope = list(lower=nulo,upper=complete),direction = "forward")
+mod2<-lm(ritmo~altura,data=estudiorc)
+summary(mod2)
+#aplico pruebas
+shapiro.test(rstudent(mod2)) #cumple el supuesto de normalidad
+require(lmtest)
+bptest(mod2) #cumple con el supuesto de homocedasticidad
+dwtest(mod2,alternative = "two.sided") #cumple con el supuesto de independencia
+summary(mod2)
+#la ecuacion es y=-17.1479+.4869x+error
+#lo que significa que a mayor altura este el personaje su ritmo cardiaco incrementa en .4869 mp
+limestudio1<-seq(min(estudiorc$peso),max(estudiorc$peso),length=12)
+limestudio2<-seq(min(estudiorc$altura),max(estudiorc$altura),length=12)
+limestudio3<-seq(min(estudiorc$edad),max(estudiorc$edad),length=12)
+limestudiorc1<-data.frame(limestudio1,limestudio2,limestudio3)
+limestudiorc1
+limestrc<-predict.lm(complete,limestudiorc1,interval = "prediction",se.fit = TRUE,data=estudiorc)
+head(limestrc$fit)
+matplot(limestudiorc1,limestrc$fit,type = "l")
+#¿Qué ritmo tendría una persona si tiene 60 años, mide 190 y pesa 60 kg?
+predict(complete,data.frame(peso=60,altura=190,edad=61),interval = "predict")
+#el ritmo cardiaco será 77.63 con limites entre 66.59 y 81.75
+
+#CUANDO NUESTROS MODELOS NO PASAN ALGUN SUPUESTO
+#Análisis de entregas de productos
+#se utiliza tiempo de var dep para decirle a los clientes cuanto tardará en llegar el producto
+#sabemos que las var q impactan en el tiempo de entrega son la dist y el # de cajas
+ncajas<-c(10,15,10,20,25,18,12,14,16,22,24,17,13,30,24)
+dist<-c(30,25,40,18,22,31,26,34,29,37,20,25,27,23,33)
+time<-c(24,27,29,31,25,33,26,28,31,39,33,30,25,42,40) #v.d
+super<-data.frame(ncajas,dist,time)
+pairs(super)
+cor(super)
+nulo<-lm(time~1,data=super)
+completo<-lm(time~.,data = super)
+step(nulo,scope = list(lower=nulo,upper=completo),direction = "forward")
+mod<-lm(time~ncajas+dist,data = super)
+summary(mod)
+#aplicando las pruebas
+shapiro.test(rstudent(mod)) 
+#se obtiene un p-value <.05 por lo tanto NO cumple con el supuesto de NORMALIDAD
+require(lmtest)
+bptest(mod) 
+#se obtiene un p-value >.05 por lo tanto SI cumple con el supuesto de HOMOCEDASTICIDAD
+dwtest(mod,alternative = "two.sided") 
+#se obtiene un p-value >.05 por lo tanto SI cumple con el supuesto de INDEPENDENCIA
+summary(mod)
+
+#corregir independencia
+#se corrrigen las observaciones con datos atipicos, que tenga ruido por lo tanto se corrije normal.
+#outlier
+install.packages("car")
+require(car)
+outlierTest(completo,cutoff=0.05,n.max=5,order=T)
+#saca la obs que bota
+#saldra la obs atipica (la obs 5 es un caso atipico)
+influencePlot(completo,id.n=5)
+#distancia del valor medio a la variable, la que tenga >dist es la que tiene problemas en el mod
+cmood<-cooks.distance(completo)
+#etiqueta<-rownames(ejer)
+#----------------------
+install.packages("faraway")
+require(faraway)
+halfnorm(cmood,ylab="dist cook")
+#el valor 5 es 0.8032, tiene mas distancia a todos los valores por lo tanto me genera un problema
+#debo quitarla
