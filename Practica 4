@@ -1,0 +1,54 @@
+#Para pegar un renglon a la matriz se puede usar rbind y cbind
+matriz<-11:30
+dim(matriz)<-c(4,5)
+View(matriz)
+rownames(matriz)<-c("Toluca","Pachuca","Guadalajara","Monterrey")
+colnames(matriz)<-c("Escuela1","Escuela2","Escuela3","Escuela4","Escuela5")
+matriz<-rbind(matriz,c(4,5,6,7,8))
+matriz
+rownames(matriz)<-c("Toluca","Pachuca","Guadalajara","Monterrey","Xalapa")
+matriz<-cbind(matriz,c(4,5,6,7,8))
+colnames(matriz)<-c("Escuela1","Escuela2","Escuela3","Escuela4","Escuela5","Escuela6")
+matriz["Pachuca","Escuela3"]
+edit(matriz)
+#para ultiplicar matrices j*i
+#para transpuesta de una matriz se utiliza t
+j<-matrix(1:18,6,3)
+t(j)
+
+#---------------------------------------------------------------------------
+#DATA FRAME
+nombres<-c("Sergio","Juan","rocio","Jessica")
+edad<-c(30,43,21,18)
+altura<-c(170,165,175,172)
+salario<-c(3000,4500,2200,4300)
+base<-data.frame(nombres,edad,altura,salario)
+base[4,3]<-178 #asigno el valor 178 a la posicion del 4to renglon 3a columna
+base$salario*2.2->base$salario #multiplico salario
+
+peso<-c(83.2,75.2,69.3,70.5) #crear una nueva variable
+base<-data.frame(nombres,edad,altura,salario,peso)
+base$peso<-base$peso*1.2
+round(base$peso,1)->base$peso        
+base$escolaridad<-c("prepa","lic","ninguno","prim") #añadir variable a la BD
+base$sexo<-c(1,1,2,2) #1: hombre y 2:mujer    
+table(base$sexo) #tabla, frecuencia en una variable
+attach(base) 
+#la función attach sirve para indicar que se trabajara solo sobre esa base
+detach(base)
+#inverso a attach
+table(sexo)
+detach(basem) #elimina la funcion atach y poder utilizar datos de otras bases
+
+##INSTALAR PAQUETERÍAS DESDE INTERNET
+install.packages("foreign")
+install.packages("car")
+#De esta forma instalamos desde internet multiples 
+install.packages(c("foreign","questionr","car"))
+#La paqueteria foreign sirve para exportar o importar bases de datos, questionr es para expandir frecuencias de 
+#bases de datos muestrales y car es para regresion
+#dentro de cada paquete vienen múltiples funciones que solo las podemos usar cuando mandamos a llamar el paquete
+#para mandar llamar una paqueteria instaladam library()y requiere ()son funciones equivalentes
+library(foreign)
+library(questionr)
+require(car)
