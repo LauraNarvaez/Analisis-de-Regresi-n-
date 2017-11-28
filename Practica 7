@@ -1,0 +1,61 @@
+#--------------RECODIFICANDO
+##########FORMA CORTA PARA TRABAJAR CON BASES DE DATOS####
+temporal<-tempfile()
+download.file("http://www.beta.inegi.org.mx/contenidos/proyectos/enchogares/modulos/mti/2015/microdatos/mti2015_bases_conapo_dbf.zip",temporal)
+files=unzip(temporal,list = TRUE)$Name
+unzip(temporal,files = files[grepl("dbf",files)])
+library(foreign)
+files #me despliega el nombre de todos los archivos que contiene el ZIP
+mti15<-data.frame(read.dbf("mti2015_05_17_sdem_precodificado.DBF"))
+View(mti2015)
+
+mti2015$GPOEDA[mti2015$EDA=="05" | mti2015$EDA=="06" | mti2015$EDA=="07"]<-1
+mti2015$GPOEDA[mti2015$EDA=="08" | mti2015$EDA=="09" | mti2015$EDA=="10" | mti2015$EDA=="11"]<-2
+mti2015$GPOEDA[mti2015$EDA=="12" | mti2015$EDA=="13" | mti2015$EDA=="14"]<-3
+mti2015$GPOEDA[mti2015$EDA=="15" | mti2015$EDA=="16" | mti2015$EDA=="17"]<-4
+
+mti2015$EDA<-as.character(mti2015$EDA)
+mti2015$EDA<-as.numeric(mti2015$EDA)
+mti2015$GPOEDA[mti2015$EDA>=5 & mti2015$EDA<=7]<-1
+mti2015$GPOEDA[mti2015$EDA>=8 & mti2015$EDA<=11]<-2
+mti2015$GPOEDA[mti2015$EDA>=12 & mti2015$EDA<=14]<-3
+mti2015$GPOEDA[mti2015$EDA>=15 & mti2015$EDA<=17]<-4
+
+table(mti2015$GPOEDA)
+
+mti2015$GPOEDA<-factor(mti2015$GPOEDA,levels = c(1,2,3,4),labels = c("Niñ@s","Pre-ado","Ado","Joven"))
+write.csv(tabla, file="TablaR.csv")
+
+##númerico
+class(mti15$ENT)
+mti15$ENT<-as.numeric(mti15$ENT)
+class(mti15$ENT)
+
+##etiquetar una variables (asignacion de nombres a las variables)
+table(mti15$CS_P15)
+mti15$CS_P15<-factor(mti15$CS_P15,levels = c(1,2,3,9),labels = c("Primaria","Secuandaria","Preparatoria","Ni idea"))
+table(mti15$CS_P15)
+table(mti15$RAMA)
+mti15$RAMA<-factor(mti15$RAMA,levels = c(1:7),labels = c("Agropecuario","Construcción","Industria Manufacturera","Comercio","Servicios","Otros","No especificado"))
+table(mti15$RAMA)
+
+#recodificar el nombre de la variable
+mti15$RAMA<-as.numeric(mti15$RAMA)
+mti15$RAMA2[mti15$RAMA==1]<-1
+mti15$RAMA2[mti15$RAMA==2]<-2
+mti15$RAMA2[mti15$RAMA==3]<-2
+mti15$RAMA2[mti15$RAMA==4]<-3
+mti15$RAMA2[mti15$RAMA==5]<-3
+mti15$RAMA2[mti15$RAMA==6]<-4
+mti15$RAMA2[mti15$RAMA==7]<-4
+table(mti15$RAMA2)
+mti15$RAMA2<-factor(mti15$RAMA2,levels = c(1:4),labels = c("Primario","Secundario","Terciario","No especificado"))
+table(mti15$RAMA2)
+
+require(questionr)
+tabla<-wtd.table(mti2015$GPOEDA, weights= mti2015$FAC_MTI)
+tabla
+#install.packages('WriteXLS')
+#require(WriteXLS)
+#help(WriteXLS)
+#WriteXLS(mti2015,"TABLA.xlsx")
