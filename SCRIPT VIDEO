@@ -1,0 +1,51 @@
+#TRABAJO FINAL
+#Modelo de regresión multiple
+
+#Existe un problema de bajo promedio de los alumnos de 3° 2, en la escuela preparatoria #38
+#ubicada en Huitzizilapan Lerma, Estado de México.
+#Se requiere conocer si el promedio esta afectado por factores como el genero al que pertenecen, 
+#la edad de los alumnos, la distancia que existe entre la escuela y el hogar, si tiene hermanos o no y el numero 
+#de hermanos que tiene, si trabaja, si tiene pareja o no.
+
+nombre<-c("Cristian Aguilar","Guadalupe Alva","Madagadela Aldana","Fernando Castillo","Kevin Contreras",
+          "Yanzi de la Cruz","Juan Flores","Carlos Gonzalez","Jaime Gonzalez","Braya Guitierrez",
+          "Ariadana de la cruz","Victoria de la Cruz","Jazmin Hernandez","Axel Jimenez","Omar Lorenzo",
+          "David de Jesús","Liliana Maya","Ilse Miramon","Alexis Morales","Miguel Munciño","Marlen Ortega",
+          "Angeles Ortiz","Jesus Perez","Leonel Pimentel","Francisco Ramirez","Emmanuel Rito","Ariana Rivera",
+          "Enrique Rivera","Alejandra Rosano","Luis Ruiz","Israel Sanchez","Lizet Vega","Santiago Villavicencio",
+          "Jakeline Bernal","Sara Zavala")
+calificaciones<-c(10,7.8,6.5,6,5.9,6,6,7.8,7.5,6.4,6.9,6.8,6,6,7,9.5,9,9.9,8,8.5,8.8,6,5.9,6.1,6.7,6.8,6,6.7,
+                  7.1,7,6.5,6.6,6.4,6,7)
+edad<-c(17,18,17,18,19,17,17,17,20,18,17,18,18,17,18,18,17,19,18,18,18,18,18,17,17,17,17,17,17,18,19,21,18,17,19)
+distancia<-c(1,.30,.45,1.30,.30,1,1,.20,.10,.30,1.30,1.30,.45,1,.30,.30,1,1,1.10,1,.50,.30,.45,1,1.30,1.10,1,1,
+             1.30,.45,.50,1.10,1.20,1.40,1)
+#la variable distancia esta en horas recorridas desde la casa a la escuela
+hermanos<-c(2,0,0,3,4,2,1,3,2,1,1,2,4,3,0,0,1,0,2,2,2,3,1,3,5,0,0,8,1,2,2,3,1,0,3)
+trabaja<-c(0,1,2,3,0,3,6,3,0,3,0,0,0,5,6,4,5,0,2,1,4,2,1,2,0,0,4,4,5,6,2,4,3,2,2)
+#muestra cuantos salarios obtiene
+pareja<-c(1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,2)
+#Indica 1:si tiene pareja y 2:no tiene pareja
+
+base<-data.frame(calificaciones,edad,distancia,hermanos,trabaja,pareja)
+View(base)
+
+#analisis exploratorio
+pairs(base)
+cor(base)
+
+nulo<-lm(calificaciones~1,data = base)
+completo<-lm(calificaciones~.,data = base)
+step(nulo,scope = list(lower=nulo, upper=completo),direction = "forward")
+modelo<-lm(calificaciones~pareja)
+summary(modelo)
+
+#p-value .1005 (>.05), arroja un estadistico F 2.26 y r^2 de .1004 es decir la relacion entre variables es de .1004
+
+#realizando la validacion de supuestos para un modelo de regresión multiple
+shapiro.test(rstudent(modelo)) #cumple el supuesto de NORMALIDAD
+#W = 0.94899, p-value = 0.1055
+require(lmtest)
+dwtest(modelo,alternative="two.sided") #no cumple el supuesto de independencia
+#DW = 1.0983, p-value = 0.001733
+bptest(modelo) #no cumple el supuesto de HOMOCEDASTICIDAD
+#BP = 10.699, df = 3, p-value = 0.01347
