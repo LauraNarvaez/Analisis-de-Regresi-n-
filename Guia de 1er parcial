@@ -1,0 +1,254 @@
+######GUÍA
+
+##I. Sea 
+#x:volumen de precipitación pluvial (m^3) 
+#y:volumen de escurrimiento en algún lugar particular
+x<-c(5,12,14,17,23,30,40,47,55,67,72,81,96,112,127)
+y<-c(4,10,13,15,15,25,27,46,38,46,53,70,82,99,100)
+
+#a) ¿Será que una grafica de dispersión de los datos apoya el uso del modelo de regresión lineal simple?
+#R: si ya que los datos se ajustan a la linea del modelo de regresión
+mrls<-lm(y~x)
+summary(mrls)
+plot(y~x, xlab="Precipitación pluvial",ylab="Volumen de escurrimiento",main="Escurrimiento de la autopista", col="Green")
+abline(mrls)
+
+#b) Calcule las estimaciones puntuales de la pendiente y la intercepción de la recta de regresión 
+#       de población
+media_x<-mean(x)
+media_x
+media_y<-mean(y)
+media_y
+a<-(x-media_x)
+b<-(y-media_y)
+Sxy<-sum(a*b)
+c<-((x-media_x)^2)
+Sxx<-sum(c)
+#Pendiente
+B1<-Sxy/Sxx
+B1
+#Recta 
+B0<-media_y-(B1*media_x)  
+B0
+
+#c) Calcule una estimación puntual del volumen de escurrimiento promedio verdadero 
+#       cuando el volumen de precipitación pluvial es de 50
+y0<-B0+(B1*x)
+y0
+Y<-B0+(B1*50)
+Y
+
+#d) Calcule una estimación puntual de la desviación estándar sigma
+Sse<-sum((y-y0)^2)
+Sse
+sigma<-Sse/13
+sigma
+desvest<-sqrt(sigma)
+desvest
+
+#e) ¿Qué proporción de la variación observada del volumen de escurrimiento puede atribuirse
+#   a la relación de regresión lineal simple entre el escurrimiento y la precipitación?
+#R: La relación es positiva con un cambio de 0.82 por cada que incrementa en una unidad la precipitación 
+#   pluvial; es decir, que el volumen de escurrimiento esta relacionado con la cantidad de lluvia 
+
+##II. Sea 
+#z:porosidad del concreto(%) 
+#w:peso unitario
+z<-c(99.0, 101.1, 102.7, 103.0, 105.4, 107.0, 108.7, 110.8, 112.1, 112.4, 113.6, 113.8, 115.1, 115.4, 120.0)
+w<-c(28.8,27.9,27.0,25.2,22.8,21.5,20.9,19.6,17.1,18.9,16.0,16.7,13.0,13.6,10.8)
+plot(z,w,xlab = "Porosidad del concreto", ylab = "Peso unitario", main = "Grafica de dispersión 1")
+abline(lm(w~z),col="Green")
+
+datos<-data.frame(z,w)
+plot(datos[,1],datos[,2],xlab = "Porosidad",ylab = "Peso unitario",main ="Eficiencia del concreto",col="Greenyellow")
+abline(lm(datos[,2]~datos[,1]),col="Firebrick1")
+
+#a) Obtenga la ecuación de la recta de regresión estimada. Cree un gráfico de dispersión de los datos~~datos[,1]
+#   y el gráfico de la recta estimada. ¿Será que el modelo de la relación
+#   una gran parte de la variación observada en w?
+medz<-mean(z)
+medz
+medw<-mean(w)
+medw
+Szw<-(sum(z*w)-(sum(z)*sum(w)/length(z)))
+Szw
+Szz<-(sum(z)^2)-(sum(z))^2/length(z)
+Szz
+#Pendiente
+B_1<-Szw/Szz
+B_1
+#Recta 
+B_0<-medw-(B_1*medz)  
+B_0
+
+#b) Interprete la pendiente de la recta de minimos cuadrados
+#R: La pendiente osea Beta 1 nos indica que por cada 1% de porosidad del concreto hay un cambio el -0.0001878
+#    lo que indica que la porosidad disminuira un 0.00018
+rls<-lm(w~z)
+summary(rls)
+
+#c) ¿Qué sucede si la estimación lineal se utiliza para predecir la porosidad
+#   cuando el peso unitario es de 135?,¿Porqué esto no es buena idea?
+#R: Cuando el peso unitario es de 153 la estimación se desfaza porque hay un incremento a la recta
+w0<-B_0+(B_1*z)
+w0
+W<-B_0+(B_1*135)
+w
+
+plot(w0,col="Red",xlab = "Porosidad del concreto", ylab = "Peso unitario", main = "Grafica de dispersión 2")
+par(new=TRUE)
+plot(z,w,col="Blue",xlab = "Porosidad del concreto", ylab = "Peso unitario", main = "Grafica de dispersión 2")
+abline(rls)
+
+#d) Calcule los residuos correspondientes a las 2 primeras observaciones.
+resi<-(w-w0)
+resi
+View(resi)
+
+#e) Calcule e interprete la estimacion puntual de sigma.
+#R: Los datos se alejan de la recta con un 5.80; es decir, que existe una variación del 5.803
+SsE<-sum((w-w0)^2)
+SsE
+s2<-SsE/(length(z)-2)
+s2
+s<-sqrt(s2)
+s
+
+#f) ¿Qué proporción de la variación observada en la porosidad se puede atribuir
+#   a la relación lineal aproximada entre el peso unitario y la posoridad?
+#R: Hay un 0.0404% de variación observada en la porosidad, es atribuible a la relación entre las variables
+Sst<-sum((w-medw)^2)
+Sst
+r2<-1-SsE/Sst
+r2
+
+##III. Polvo de caucho y cemento asfáltico con 
+#m:esfuerzo axial 
+#n:esfuerzo cúbico
+m<-c(112.3, 97.0, 92.7, 86.0, 102.0, 99.2, 95.8, 103.5, 89.0, 86.7)
+n<-c(75.0, 71.0, 57.7, 48.7, 74.3, 73.3, 68.0, 59.3, 57.8, 48.5)
+plot(m,n,xlab = "Esfuerzo axial",ylab = "Esfuerzo cúbico", main = "Uso de cemento con caucho",col="Purple")
+
+#a) Obtenga la ecuación de la recta de minimos cuadrados e interprete su pendiente.
+#R: n=-31.8036+0.9869m
+#     por cada esfuerzo cubico hay un aumento del 0.9869 en el esfuerzo axial
+medm<-mean(m)
+medn<-mean(n)
+Smn<-sum((m-medm)*(n-medn))
+Smn
+Smm<-sum((m-medm)^2)
+Smm
+Be1<-Smn/Smm
+Be1
+Be0<-medn-(Be1*medm)
+Be0
+
+#b) Calcule e interprete el coeficiente de determinación.
+#R: Las variables se relacionan en un 63% 
+SsT<-sum((n-medn)^2)
+SsT
+n0<-Be0+(Be1*m)
+SSe<-sum((n-n0)^2)
+SSe
+R2<-1-(SSe/SsT)
+R2
+
+#c) Calcule e interprete una estimación de la desviación estándar de sigma del error
+#   en el modelo de regresión lineal simple.
+#R: Los datos tienen un buen ajuste siendo este un 58.38%, por lo tanto 
+Mrs<-lm(n~m)
+summary(Mrs)
+abline(Mrs)
+
+##IV. Liberación de nitrogeno por los boilers. 
+#t:tasa de liberación debido a área de quemador 
+#f:tasa de emisión de nitrogeno
+t<-c(100, 125, 125, 150, 150, 200, 200, 250, 250, 300, 300, 350, 400, 400)
+f<-c(150, 140, 180,210,190,320,280,400,430,440,390,600,610,670)
+plot(t,f,xlab="Liberación de gas",ylab = "Emisión de nitrogeno", main="Ecología",col="Yellow")
+
+srl<-lm(f~t)
+summary(srl)
+abline(srl)
+#a) Suponiendo que el modelo de regresión lineal simple es válido, obtenga la estimación de 
+#   minimos cuadrados de la recta de regresión verdadera.
+#R: La recta es f=-45.55191+1.7114t
+medt<-mean(t)
+medf<-mean(f)
+Stf<-sum((t-medt)*(f-medf))
+Stf
+Stt<-sum((t-medt)^2)
+Stt
+Be_1<-Stf/Stt
+Be_1
+Be_0<-medf-(Be_1*medt)
+Be_0
+
+#b) ¿Cuál es la estimación de la tasa de emisión de nitrogeno esperada cuando la tasa de liberación
+#   debido al área del quemador es igual a 225?
+#R: La tasa de emisión es de 339.5204
+f0<-Be_0+(Be_1*t)
+f0
+est<-Be_0+(Be_1*225)
+est
+
+#c) Estime la cantidad en la cual espera que cambie la tasa de emisiones de nitrogeno cuando
+#   la tasa de liberación debida al área del quemador disminuye en 50
+#R: Se espera que la tasa disminuya en un 131.1235
+est1<-Be_0+(Be_1*(-50))
+est1
+
+#d) ¿Utilizaría la recta de regresión estimada para predecir la tasa de emisión con una tasa de 
+#   liberación de 500? ¿Por qué?
+#R: No, pues la emision de nitrogeno aumenta conforme aumenta la liberación del gas
+est2<-Be_0+(Be_1*500)
+est2
+
+##V. comportamiento de las especies que pueden causar daños ecológicos y economicos en los ríos
+#l:área superficial de la roca 
+#g:densidad de la colonia
+l<-c(50,71,55,50,33,58,79,26,69,44,37,70,20,45,49)
+g<-c(152,1929,48,22,2,5,35,7,269,38,171,13,43,185,25)
+plot(l,g,xlab="Área",ylab = "Densidad", main="Comportamiento de las especies",col="Orange")
+abline(msrl)
+
+#a) Ajuste el modelo de regresión lineal simple a estos datos, prediga la densidad de la colonia cuando
+#   el área superficial=70 y cuando el área superficial=71 y calcule los residuos correspondientes
+#   ¿Comó se comparan entre sí?
+#R: Los datos originales están cerca de la recta, sin embargo al ajustarlos se dispersan. De modo que 
+#    al establecer un punto del ára entre 70 y 71 tenemos que los residuos son de 391.520 y 401.492
+msrl<-lm(g~l)
+summary(msrl)
+g0<-(-305.881)+(9.963*l)
+g0
+ajuste<-c(g-g0)
+ajuste
+plot(g0,xlab="Área",ylab = "Densidad", main="Comportamiento de las especies",col="Lightblue")
+par(new=TRUE)
+plot(l,g,xlab="Área",ylab = "Densidad", main="Comportamiento de las especies",col="Orange")
+par(new=TRUE)
+plot(g1,g2,xlab="Área",ylab = "Densidad", main="Comportamiento de las especies",col="Pink")
+abline(msrl)
+g1<-(-305.881)+(9.963*70)
+g2<-(-305.881)+(9.963*71)
+g1
+g2
+
+
+#b) Calcule e interprete el coeficiente de determinación
+#R: Hay una relación del 12.37% entre área y la densidad de la colonia, así que no existe un riesgo
+#    de daños ecologicos
+SSE<-sum((g-g0)^2)
+medg<-mean(g)
+SSt<-sum((g-medg)^2)
+r_2<-1-(SSE/SSt)
+r_2
+
+#c) La segunda observación tiene un valor y muy extremo y (en el conjunto de datos completo que consta
+#   de 72 observaciones, había dos de estos). Esta observación puede haber tenido un impacto sustancial
+#   en el ajuste del modelo y en las conclusiones posteriores. elimine y vuelva a calcular la ecuación
+#   de la recta de regresión estimada. ¿Será que difiere sustancialmente de la ecuación antes de la 
+#   de eliminación. ¿Cuál es el impacto en r^2 y en s? 
+S2<-SSE/(length(g)-2)
+S<-sqrt(S2)
+S
