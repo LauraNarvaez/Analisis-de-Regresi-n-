@@ -1,0 +1,246 @@
+########### LAURA NRAVÁEZ CAMPOS
+#################EXAMEN PARCIAL DE ANÁLISIS DE REGRESIÓN
+#1.	¿Cuál es el objetivo del AR?
+#R: el objetivo de AR es conocer como se relacionan las variables entre sí; 
+#      es decir si la variable dependiente  se relaciona con la variable dependiente
+#2.	El parametro sigma cuadrada, ¿qué función cumple en el AR?
+#R: sigma cuadrada indica que tan alejados están los datos de la recta
+#3.	¿Comó se interpretan B0, Bn y sigma cuadrada?
+#Beta 1: es la pendiente de la recta. Indica el cambio que puede tener la variable dependiente
+#Beta 0: es la ordenada al origen, es el punto donde la recta corta el eje vertical. 
+#Sigma cuadrada: indica si el modelo tiene variabilidad o no
+#4.	Plantea un análisis de regresión
+#R: supongamos  que se requiere saber si existe una relación entre el ingreso que percibe una 
+#   persona y la entidad en la que vive, entonces  se hace uso del análisis de regresión para 
+#   saber si las variables tienen algo que ver
+#5.	¿Comó se interpreta la suma de cuadrados debido al error y como se construye?
+#   Suma de cuadrados debido al error: se obtiene mediante la suma de los residuos, es decir 
+#   Suma(valor Yi-valor estimado de Y)
+#   Se interpreta como la distancia que hay entre cada punto y la recta de regresión.
+#6.	¿En términos generales en que consiste el método de minimos cuadrados para el AR?
+#   Menciona sus fortalezas y debilidades. Expliquelas
+#R: El método de mínimos cuadrados consiste en que una recta es la mejor forma de ver el 
+#   comportamiento de las variables, es decir que los puntos que existen en una gráfica de dispersión 
+#   se pueden analizar de mejor forma si se traza una recta que indique como es el comportamiento de 
+#   los datos
+#7.	El coeficiente de determinación para que se utiliza en el AR, y plantea su vinculo con el 
+#   análisis de residuales
+#R: El coeficiente de determinación se utiliza para saber la fuerza de la relación entre variables 
+#   mediante el análisis de residuales pues requiero obtener los valores ajustados a la recta.
+
+#8. Los datos que representan las cantidades de autos importados y vendidos en USA durante 1969-1996
+#x: año 1969
+#y: autos vendidos
+x<-c(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27)
+y<-c(1.1,1.3,1.6,1.6,1.8,1.4,1.6,1.5,2.1,2.0,2.3,2.4,2.3,2.2,2.4,2.4,2.8,3.2,3.1,3.1,2.8,2.5,2.1,2.0,1.8,1.8,1.6,1.4)
+plot(x,y,xlab = "Años",ylab = "Ventas",main = "Autos vendidos en USA",col="Blue")
+#a) En un diagrama de dispersión localice los datos para los años 1969 a 1988. ¿Parece haber
+#   relación lineal entre la cantidad de automóviles importados en esos años?
+#R: Existe una relacion entre la cantidad de autos vendidos y los años en que se venden pues mediante 
+#   la gráfica de dispersión ya que se observa el incremento en la cantidad de autos que se venden a 
+#   través entre el periodo 1969 y 1988
+#b) A través de Minimos cuadrados predecir el número de automóviles importados como función del año
+#   para el periodo 1969 a 1988
+msrl<-lm(y~x)
+summary(msrl)
+#   y=1.70837+0.02742x esta recta permite predecir el comportamiento en los siguientes años despues de
+#   1988
+#c) Relación lineal siginifcativa? La relacion es positiva
+Beta1<-0.02742
+Beta0<-1.70837
+Y<-Beta0+(Beta1*x)
+Y
+resi<-(y-Y)
+resi
+SsE<-sum((y-Y)^2)
+SsE
+s<-SsE/(length(y)-2)
+s
+desvest<-sqrt(s)
+desvest
+#d) Pronostico del numero de autos en los años 1994, 1995 y 1996
+#   R: Para estos años se venden 3 autos, por lo que podemos decir que para años siguientes se venden 3 autos
+y1<-Beta0+(Beta1*25)
+y2<-Beta0+(Beta1*26)
+y3<-Beta0+(Beta1*27)
+val_ajust<-c(y1,y2,y3)
+val_ajust
+#e) Observe los puntos de los datos reales para los años, ¿Las predicciones proporcionan estimaciones
+#   exactas de los valores reales en estos años?
+#R: Las predicciones no son del todo exactas pues los valores ajustados indican que se venderan 3 autos por
+#      año, sin embargo los valores reales indican que las ventas van a ser de 1 auto aproximadamente por año
+plot(val_ajust,xlab = "Años",ylab = "Ventas",main = "Autos vendidos en USA",col="Gold")
+par(new=TRUE)
+plot(x,y,xlab = "Años",ylab = "Ventas",main="Autos vendidos en USA",col="Blue",xlim =c(20,27))
+#f) Agrege los datos entre 1989 a 1996 a la baser y calcule de nuevo la recta de regresión
+#   R: Las ventas disminuyen en este intervalo 1989 a 1996
+basen<-data.frame(x,y)
+plot(x,y,xlab = "Años",ylab = "Ventas",main = "Autos vendidos en USA",col="Blue",xlim =c(20,27))
+#g) la recta formada por los datos es poco exacta, se podria hacer un ajuste a las variables
+#   para tener una representacion más exacta.
+abline(msrl)
+
+#9. Suponemos que queremos saber 
+#x: cantidad de personas que hay en una localidad 
+#y: cantidad de basura de producen 
+x<-sample(1:100)
+y<-sample(9001:10000,100, replace = TRUE)
+#a) Gráfica de dispersión
+plot(x,y,xlab = "# de personas",ylab = "Kg de basura",main="Cantidad de contaminación",col="Orange")
+abline(lm(y~x))
+#   R: No hay una relación consistente pues los datos no tienen un patron claro
+#b) Recta por minimos cuadrados 
+#   R: y=9526.488+0.8223342x. Por cada persona que hay de más en la localidad la basura que produce
+#      la localidad aumenta en un .8223 y existe un aumento del 9526.488 cuando se produce mas basura
+#      entre mas personas mayor generacion de basura
+Sxy<-sum((x-mean(x))*(y-mean(y)))
+Sxx<-sum((x-mean(x))^2)
+Beta1<-Sxy/Sxx
+Beta1  
+Beta0<-mean(y)+(Beta1*mean(x))
+Beta0
+y0<-Beta0+(Beta1*x)
+y0
+plot(y0,xlab = "# de personas",ylab = "Kg de basura",main="Cantidad de contaminación",col="Green")
+par(new=TRUE)
+plot(x,y,xlab = "# de personas",ylab = "Kg de basura",main="Cantidad de contaminación",col="Orange")
+abline(lm(y~x))
+resi<-(y-y0)
+resi
+#SSE
+SSE<-sum((y-y0)^2)
+sigmacuadrada<-(sum((y-y0)^2))/98
+sigma<-sqrt(sigmacuadrada)
+#SST
+SST<-sum((y-mean(y))^2)
+r2<-1-(SSE/SST)
+r2
+#c) se obtuvo un -8.76% de variación lo que indica que la población contamina mucho
+#d) Estimación puntual siendo un 55 personas
+estim<-Beta0+(Beta1*55)
+estim
+# Si la población tiene 55 personas podemos saber que la cantidad de basura es de 9571.716 kilos
+
+#10.
+#x: altura
+#y: precio
+x<-c(12,14,14,15,15,16,18,22,23,24,24,26,26,27,28,30,30,33,36)
+y<-c(35.53,37.82,36.9,40,38,37.5,41,48.5,47,47.5,46.2,50.35,49.13,48.07,50.9,54.78,54.32,57.17,57.45)
+#a) El precio de la armadura esta determinado por la altura de la armadura con un .98858
+msrl1<-lm(y~x)
+summary(msrl1)
+#b) Gráfica de dispersión
+plot(x,y,xlab = "Altura",ylab = "Precio",main = "Venta de armaduras",col="Slateblue")
+#   sugiere que entre mas alta sea la armadura mayor es el precio de venta
+#c) Recta de minimos cuadrados
+Sxy<-sum((x-mean(x))*(y-mean(y)))
+Sxx<-sum((x-mean(x))^2)
+Beta1<-Sxy/Sxx
+Beta1 
+Beta0<-(sum(y)-sum((Beta1)*x))/length(x)
+Beta0
+#   R: y=23.68768+0.9885x
+
+#d) Prediccion puntual cuando la altura es 27
+Y<-Beta0+(Beta1*x)
+Y
+y0<-Beta0+(Beta1*27)
+y0
+plot(y0,xlab = "Altura",ylab = "Precio",main = "Venta de armaduras",col="Violetred1")
+par(new=TRUE)
+plot(x,y,xlab = "Altura",ylab = "Precio",main = "Venta de armaduras",col="Yellowgreen")
+abline(lm(y~x),col="Turquoise4")
+# R: cuando la altura es 27 el precio esta entre $80 y $100
+#e) tiene un 96.53% de variacion observada; es decir que tiene un 96.53% de capacidad de predecir los
+#   valores de los precios de las armaduras y sus alturas
+SSE<-sum((y-Y)^2)
+SSE
+SST<-sum((y-mean(y))^2)
+r2<-1-(SSE/SST)
+r2
+#   Beta 1 indica que por cada cm mas de altura que tengan las armaduras su precio se incrementara en .988
+#   unidades más.
+
+#11. Recuperacion de petroleo sobre la superficie del agua utilizando trigo
+#x: aceite derramado (gr)
+#y: aceite recuperado por medio de la paja de trigo
+x<-c(1,1.5,2.1,2.8,3.6,4.5,5.5,6.6,7.8,9.1,10.5,12,13.6,15.2,16.9)
+y<-c(.61,.84,1.512,1.792,2.952,2.88,4.4,5.346,6.396,7.189,8.085,9.84,11.696,13.224,14.365)
+#a) Diagrama de dispersión ¿Se recupera facilmente el aceite?
+plot(x,y,xlab = "Aceite derramado",ylab = "Aceite recuperado",main = "Derrame de crudo en agua(gr)",col="Magenta")
+#   R: Apartir de esta tecnología se puede observar por medio de la gráfica que el contaminante derramado
+#      sobre la superficie del agua se recupera facilmente casi en su totalidad
+#b) Coeficiente de determinación
+#   R: se tiene uin 99.56% de variacion en el modelo, lo que quiere decir que el modelo es preciso
+Sxy<-sum(x*y)-((sum(x)*sum(y))/length(x))
+Sxx<-sum(x^2)-((sum(x)^2)/length(x))
+Beta1<-Sxy/Sxx
+Beta0<-(sum(y)-sum((Beta1)*x))/length(x)
+Y<-Beta0+(Beta1*x)
+SSE<-sum((y-Y)^2)
+SST<-sum((y-mean(y))^2)
+r2<-1-(SSE/SST)
+r2
+#c) R: el MRLS es util ya que todos los valores están muy cerca de la recta, así que si hay un derrame
+#      la certeza de que funcione la tecnología es del 100%
+abline(lm(y~x))
+#d) Prediccion del valor del aceite recuperado cuando la cantidad de aceite derramado es 5
+#   R: y=3.8678 indicando que cuando se derraman 5 gr de aceite se recuperan casi 4 gr
+y0<-Beta0+(Beta1*5)
+y0
+plot(y0,xlab = "Aceite derramado",ylab = "Aceite recuperado",main = "Derrame de crudo en agua(gr)",col="Aquamarine")
+par(new=TRUE)
+plot(x,y,xlab = "Aceite derramado",ylab = "Aceite recuperado",main = "Derrame de crudo en agua(gr)",col="Magenta")
+abline(lm(y~x))
+
+#12. Suponiendo que se requiere conocer la cantidad de dinero que un trabajador aporta a su AFORE
+#    en base al ingreso que recibe.
+#x: ingreso obtenido
+#y: cantidad aportada
+x<-c(sample(85.50:10000,50.5,replace = TRUE))
+y<-c(sample(0:2000,50.5,replace = TRUE))
+#a) Grafica de dispersión
+bse<-data.frame(x,y)
+plot(x,y,xlab = "Ingreso obtenido",ylab = "$ aportado al Afore",main = "Ahorro voluntario",col=colors(distinct = TRUE))
+#b) ¿Qué tipo de relación hay entre las variables?
+#   R: Existe una relacion fuertemente positiva ya que la correlación arroja un valor mayor a cero
+Sxy<-sum((x-mean(x))*(y-mean(y)))
+Sxx<-sum((x-mean(x))^2)
+Syy<-sum((y-mean(y))^2)
+r<-Sxy/(sqrt(Sxx)*sqrt(Syy))
+r
+cor(x,y)
+#c) Estimación de valores futuros
+#   R: La recta para obtener valores futuros es y=1127.2852+0.0037x. La aportacion minima que hace un trabajador
+#      es cero y la maxima aportacion es 842.22 pesos
+Beta1<-Sxy/Sxx
+Beta0<-mean(y)-(Beta1*mean(x))
+Beta0
+Y<-Beta0+(Beta1*x)
+Y
+bse1<-data.frame(x,y,Y)
+View(bse1)
+mrls1<-lm(y~x)
+summary(mrls1)
+#d) Calcular y cuando x=85.50,500,5000,10000
+#   R: Elegi estos valores porque considere el sueldo que una persona obtiene puse el minimo y el maximo
+y1<-Beta0+(Beta1*85.5)
+y2<-Beta0+(Beta1*500)
+y3<-Beta0+(Beta1*5000)
+y4<-Beta0+(Beta1*10000)
+val_ajust<-c(y1,y2,y3,y4)
+val_ajust
+#e) ¿Qué utilizar r^2 o sigma^2?
+#   R: Yo utilizaria r cuadrada porque me garantiza saber si el modelo es preciso para saber si el ahorro
+#      voluntario es factible para los empleados
+SSE<-sum((y-Y)^2)
+sigmacuadrada<-SSE/(length(x)-2)
+sigmacuadrada
+SST<-sum((y-mean(y))^2)
+r2<-1-(SSE/SST)
+r2
+
+#13. Representación de una gráfica la medida de la suma de cuadrados debido
+#    al error y la medida de suma de cuadrados totales
+#    R: En una grafica se puede observar a simple vista las distancias entre los puntos y la recta estos son
+#       los errores, si hay un buen ajuste de los datos y la recta obtenida.
