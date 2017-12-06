@@ -1,0 +1,58 @@
+#LAURA NARVAEZ CAMPOS
+#ANALISIS DE REGRESIÓN
+#RECUPERACIÓN DEL EXAMEN SORPRESA 
+
+#1. Genera una base de datos que contenga lo siguiente; 
+#nombres : Rodolfo Angel, Alejandro Arevalo, Ana Elvia, Guillermo Rosas, Daniela, Fernanda, Elisa  Fenanda; 
+#Preparatoria: Prepa5, Prepa Texcoco, Prepa 4,  Claudina Thevenet, Isidro Fabela, Instituto Metepec; 
+#Tipo:  1,1,1,1,1,2,2,2; 
+#Sexo 1,1,2,1,2,2,2,2.
+
+nombres<-c("Rodolfo Angel", "Alejandro Arevalo", "Ana Elvia", "Guillermo Rosas", "Daniela", "Fernanda", "Elisa  Fernanda")
+prepa<-c("Prepa 5","Prepa Texcoco","Prepa 4","Claudina","Thevenet","Isidro Fabela","Instituto Metepec")
+tipo<-c(1,1,1,1,2,2,2) #1: tipo pública 2:tipo privada
+sexo<-c(1,1,2,1,2,2,2) #1:Hombre 2:Mujer
+#a) declaramos data.frame llamado "tabla"
+tabla<-data.frame(nombres,prepa,tipo,sexo)
+View(tabla)
+#b) ¿Qué es un data.frame en R?
+#   Un data.frame agrupa datos para formar una base de datos con variables que 
+#   pueden tener diferentes tipos de datos
+
+#2. Importar bases de datos 
+install.packages("foreing")
+install.packages("questionr")
+install.packages("car")
+require(foreign)
+require(questionr)
+#importar la base "sdemte2017" y guardarla en "baseinegi"
+baseinegi<-read.dbf("C:/Users/SalaD-9/Desktop/sdemt217.dbf")
+
+#a) Cambiar a numerico las variables: R_DEF y C_RES1
+class(baseinegi$R_DEF)
+baseinegi$R_DEF<-as.numeric(baseinegi$R_DEF)
+class(baseinegi$C_RES)
+baseinegi$C_RES<-as.numeric(baseinegi$C_RES)
+
+#b) ¿Porqué se deben convertir a numericas las variables?
+#   Se deben cambiar porque requerimos trabajar con matrices que 
+#   contengan el mismo tipo de clase
+
+#c) ¿Para que funciona un "subset" en R
+#   El "subset" se utilixa para filtrar los datos de interés que 
+#   están contenidos dentro de la base completa
+
+#d) Realiza un filtro con la base utilizada ant. que cumpla:
+#    i.R_DEF=0 y C_RES=1 tal que c_RES=3 y edad este entre 15 y 98
+filtro1<-subset(baseinegi,(EDA >= 15 & EDA <= 98)&(R_DEF=="0")&(C_RES=="1")| C_RES =="3")
+#    ii. Con los criterios de i selecciones EDA,SEX,HRSOCUP
+CLASE2<-data.frame(filtro1$EDA,filtro1$SEX,filtro1$HRSOCUP)
+View(CLASE2)
+
+#e) ¿Cuál es la función de attach?
+#   Esta dunción sirva para hacer tablas dinámicas
+#f) Con la base filtrada del inciso d, en una variable llamada CLASE2V1
+#   guarda  CLASE2 en formato tabla
+attach(CLASE2)
+#g) Histograma con CLASE2 
+plot(CLASE2)
